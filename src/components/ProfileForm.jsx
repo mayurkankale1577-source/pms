@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 
-export default function ProfileForm({ user }) {
+export default function ProfileForm({
+  user = {},
+}) {
   const [formData, setFormData] = useState({
     name: user.name || "",
     phone: user.phone || "",
@@ -104,7 +106,7 @@ export default function ProfileForm({ user }) {
 
             <input
               type="email"
-              value={user.email}
+              value={user?.email || ""}
               readOnly
               className={readOnlyClass}
             />
@@ -182,7 +184,7 @@ export default function ProfileForm({ user }) {
 
             <input
               type="text"
-              value={user.role}
+              value={user?.role || ""}
               readOnly
               className={readOnlyClass}
             />

@@ -1,9 +1,13 @@
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/current-user";
 import { getAllUsers } from "@/services/user.service";
+export const dynamic = "force-dynamic";
 
 export default async function UsersPage() {
   const currentUser = await getCurrentUser();
+  if (!user) {
+    redirect("/login");
+  }
 
   if (currentUser?.role !== "admin") {
     redirect("/dashboard");
