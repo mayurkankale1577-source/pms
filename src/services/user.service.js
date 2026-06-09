@@ -157,8 +157,32 @@ export async function getUserByEmail(email) {
 | SELECT users
 |--------------------------------------------------------------------------
 */
-export async function getAllUsers() {
-  const [rows] = await db.query(`
+// export async function getAllUsers() {
+//   const [rows] = await db.query(`
+//     SELECT
+//       id,
+//       name,
+//       email,
+//       role,
+//       created_at
+//     FROM users
+//     ORDER BY id DESC
+//   `);
+
+//   return rows;
+// }
+
+
+
+export async function getUsersPaginated(
+  page = 1,
+  limit = 10
+) {
+  const offset =
+    (page - 1) * limit;
+
+  const [users] = await db.query(
+    `
     SELECT
       id,
       name,
@@ -167,9 +191,22 @@ export async function getAllUsers() {
       created_at
     FROM users
     ORDER BY id DESC
-  `);
+    LIMIT ? OFFSET ?
+    `,
+    [limit, offset]
+  );
 
-  return rows;
+  const [countRows] =
+    await db.query(`
+      SELECT COUNT(*) AS total
+      FROM users
+    `);
+
+  return {
+    users,
+    total:
+      countRows[0].total,
+  };
 }
 
 /*
