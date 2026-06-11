@@ -152,15 +152,15 @@ export default function Page() {
               </option>
 
               <option>
-                Anita Babu
+                Anita mam
               </option>
 
               <option>
-                Urmila
+                Urmila mam
               </option>
 
               <option>
-                Shital
+                Shital mam
               </option>
 
             </select>
