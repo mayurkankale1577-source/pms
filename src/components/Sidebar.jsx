@@ -7,6 +7,8 @@ import {
   FiLock,
   FiUsers,
   FiUserPlus,
+  FiCalendar,
+  FiClipboard,
 } from "react-icons/fi";
 
 export default function Sidebar({ user }) {
@@ -94,6 +96,32 @@ export default function Sidebar({ user }) {
               </li>
             </>
           )}
+
+
+
+{["admin", "hr"].includes(user?.role) && (
+  <li>
+    <Link
+      href="/dashboard/all-leave-requests"
+      className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 transition"
+    >
+           <FiClipboard size={18} />
+      <span>All Leave Requests</span>
+    </Link>
+  </li>
+)}
+
+{user?.role === "team_leader" && (
+  <li>
+    <Link
+      href="/dashboard/team-leave-requests"
+      className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 transition"
+    >
+      <FiClipboard size={18} />
+      <span>Team Leave Requests</span>
+    </Link>
+  </li>
+)}
 
         </ul>
 

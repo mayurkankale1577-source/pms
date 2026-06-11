@@ -15,22 +15,15 @@ export async function getCalendarData(
       [userId]
     );
 
-  const [leaves] =
-    await db.query(
-      `
-      SELECT
-        from_date,
-        to_date,
-        status
-      FROM leave_requests
-      WHERE user_id = ?
-      AND status = 'Approved'
-      `,
-      [userId]
-    );
+  return attendance.map(
+    (row) => ({
+      date:
+        row.attendance_date
+          .toISOString()
+          .split("T")[0],
 
-  return {
-    attendance,
-    leaves,
-  };
+      status:
+        row.status || "present",
+    })
+  );
 }

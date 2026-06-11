@@ -67,6 +67,7 @@ export default function AttendanceCalendar({
   };
 
   const getStatus = (day) => {
+
     const dateString =
       `${year}-${String(month + 1).padStart(
         2,
@@ -75,13 +76,17 @@ export default function AttendanceCalendar({
         2,
         "0"
       )}`;
-
-    const record = data.find(
-      (item) =>
-        item.date === dateString
-    );
-
-    return record?.status || null;
+  
+    const record =
+      data.find(
+        (item) =>
+          item.date ===
+          dateString
+      );
+  
+    return record
+      ? record.status
+      : null;
   };
 
   const getClassName = (
