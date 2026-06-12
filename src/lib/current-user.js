@@ -8,20 +8,29 @@ export async function getCurrentUser() {
 
     const token = cookieStore.get("token");
 
-    if (!token) {
+    if (!token?.value) {
       return null;
     }
 
     const decoded = verifyToken(token.value);
 
-    if (!decoded) {
+    if (!decoded?.email) {
       return null;
     }
 
-    const user = await getUserByEmail(decoded.email);
+    const user = await getUserByEmail(
+      decoded.email
+    );
 
-    return user;
-  } catch {
+    return user || null;
+
+  } catch (error) {
+
+    console.log(
+      "GET CURRENT USER ERROR:",
+      error
+    );
+
     return null;
   }
 }
