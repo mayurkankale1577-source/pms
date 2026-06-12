@@ -11,18 +11,31 @@ import {
 
 export default async function Page() {
 
-  const user =
-    await getCurrentUser();
+  const user = await getCurrentUser();
 
-  const balance =
-    await getLeaveBalance(
-      user.id
-    );
+console.log("USER:", user);
 
-  const requests =
-    await getLeaveRequests(
-      user.id
-    );
+if (!user) {
+  return <div>User not found</div>;
+}
+
+if (!user) {
+  return (
+    <div>
+      User not found
+    </div>
+  );
+}
+
+const balance = await getLeaveBalance(
+  user.id
+);
+
+const requests = await getLeaveRequests(
+  user.id
+);
+
+ 
 
   return (
     <div className="space-y-8 max-w-7xl mx-auto">
