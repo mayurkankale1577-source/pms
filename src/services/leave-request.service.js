@@ -150,7 +150,7 @@ export async function getAllLeaveRequests() {
     LEFT JOIN users u
       ON lr.user_id = u.id
     LEFT JOIN users a
-      ON lr.approver_id = a.id
+      ON lr.approved_by = a.id
     ORDER BY lr.created_at DESC
   `);
 

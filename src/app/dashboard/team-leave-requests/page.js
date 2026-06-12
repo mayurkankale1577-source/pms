@@ -11,12 +11,20 @@ import {
 export default async function TeamLeaveRequestsPage() {
 
   const user =
-    await getCurrentUser();
+  await getCurrentUser();
 
-  const requests =
-    await getTeamLeaveRequests(
-      user.id
-    );
+if (!user) {
+  return (
+    <div>
+      User not found
+    </div>
+  );
+}
+
+const requests =
+  await getTeamLeaveRequests(
+    user.id
+  );
 
   return (
     <div className="space-y-6">
