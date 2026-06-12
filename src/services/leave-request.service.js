@@ -91,7 +91,7 @@ export async function createLeaveRequest(
         status
       )
       VALUES
-      (?, ?, ?, ?, ?, ?, ?, 'Pending')
+      (?, ?, ?, ?, ?, ?, ?, 'pending')
       `,
       [
         userId,
