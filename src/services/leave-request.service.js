@@ -11,8 +11,8 @@ export async function getLeaveBalance(
   const [rows] = await db.query(
     `
     SELECT
-      casual,
-      earned
+      casual_leave,
+      earned_leave
     FROM leave_balance
     WHERE user_id = ?
     `,
@@ -113,20 +113,22 @@ export async function createLeaveRequest(
 |--------------------------------------------------------------------------
 */
 export async function getTeamLeaveRequests(
-  approverId
+  teamLeaderId
 ) {
+
   const [rows] = await db.query(
     `
     SELECT
       lr.*,
-      u.name
+      u.name AS employee_name
     FROM leave_requests lr
     INNER JOIN users u
       ON lr.user_id = u.id
-    WHERE lr.approver_id = ?
+    WHERE
+      u.reporting_manager_id = ?
     ORDER BY lr.created_at DESC
     `,
-    [approverId]
+    [teamLeaderId]
   );
 
   return rows;
@@ -138,23 +140,19 @@ export async function getTeamLeaveRequests(
 |--------------------------------------------------------------------------
 */
 export async function getAllLeaveRequests() {
-  const [rows] = await db.query(
-    `
+
+  const [rows] = await db.query(`
     SELECT
       lr.*,
-      u.name,
+      u.name AS employee_name,
       a.name AS approver_name
     FROM leave_requests lr
-
-    INNER JOIN users u
+    LEFT JOIN users u
       ON lr.user_id = u.id
-
     LEFT JOIN users a
       ON lr.approver_id = a.id
-
     ORDER BY lr.created_at DESC
-    `
-  );
+  `);
 
   return rows;
 }
@@ -168,22 +166,29 @@ export async function approveLeaveRequest(
   requestId,
   approvedBy
 ) {
-  await db.query(
-    `
-    UPDATE leave_requests
-    SET
-      status = 'Approved',
-      approved_by = ?,
-      approved_at = NOW()
-    WHERE id = ?
-    `,
-    [
-      approvedBy,
-      requestId,
-    ]
+
+  const [result] =
+    await db.query(
+      `
+      UPDATE leave_requests
+      SET
+        status = 'approved',
+        approved_by = ?,
+        approved_at = NOW()
+      WHERE id = ?
+      `,
+      [
+        approvedBy,
+        requestId,
+      ]
+    );
+
+  console.log(
+    "APPROVE RESULT",
+    result
   );
 
-  return true;
+  return result;
 }
 
 /*
@@ -199,7 +204,7 @@ export async function rejectLeaveRequest(
     `
     UPDATE leave_requests
     SET
-      status = 'Rejected',
+      status = 'rejected',
       approved_by = ?,
       approved_at = NOW()
     WHERE id = ?
@@ -212,3 +217,6 @@ export async function rejectLeaveRequest(
 
   return true;
 }
+
+
+

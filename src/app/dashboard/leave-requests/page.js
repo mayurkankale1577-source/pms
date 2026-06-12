@@ -1,17 +1,36 @@
 import Link from "next/link";
 
-export default function Page() {
+import {
+  getCurrentUser,
+} from "@/lib/current-user";
 
-  const currentRequests = [];
-  const pastRequests = [];
+import {
+  getLeaveBalance,
+  getLeaveRequests,
+} from "@/services/leave-request.service";
+
+export default async function Page() {
+
+  const user =
+    await getCurrentUser();
+
+  const balance =
+    await getLeaveBalance(
+      user.id
+    );
+
+  const requests =
+    await getLeaveRequests(
+      user.id
+    );
 
   return (
     <div className="space-y-8 max-w-7xl mx-auto">
 
-      {/* Header */}
       <div className="flex justify-between items-start">
 
         <div>
+
           <h1 className="text-4xl font-bold">
             Leave Requests
           </h1>
@@ -19,6 +38,7 @@ export default function Page() {
           <p className="text-slate-500 mt-2">
             Manage your current and past leave requests.
           </p>
+
         </div>
 
         <Link
@@ -37,7 +57,6 @@ export default function Page() {
 
       </div>
 
-      {/* Leave Balance */}
       <div className="bg-white border rounded-3xl p-6">
 
         <h2 className="text-2xl font-bold mb-2">
@@ -52,117 +71,122 @@ export default function Page() {
 
           <div className="border rounded-2xl p-4">
             Casual leaves remaining
+
             <span className="font-bold ml-3">
-              4.00
+              {balance?.casual_leave ?? 0}
             </span>
+
           </div>
 
           <div className="border rounded-2xl p-4">
             Earned leaves remaining
+
             <span className="font-bold ml-3">
-              36.72
+              {balance?.earned_leave ?? 0}
             </span>
+
           </div>
 
         </div>
 
       </div>
 
-      {/* Current Requests */}
       <div className="bg-white border rounded-3xl overflow-hidden">
 
         <div className="p-6 border-b">
+
           <h2 className="text-2xl font-bold">
-            Current requests
+            My Leave Requests
           </h2>
 
-          <p className="text-slate-500 mt-2">
-            Current includes active dates and all requests that are still actionable.
-          </p>
         </div>
 
         <table className="w-full">
+
           <thead className="bg-slate-50">
+
             <tr>
+
               <th className="p-4 text-left">
-                LEAVE BREAKUP
+                Leave Type
               </th>
+
               <th className="p-4 text-left">
-                DATE RANGE
+                Date Range
               </th>
+
               <th className="p-4 text-left">
-                APPROVER
+                Status
               </th>
+
               <th className="p-4 text-left">
-                STATUS
+                Reason
               </th>
-              <th className="p-4 text-left">
-                NOTES
-              </th>
-              <th className="p-4 text-left">
-                ACTION
-              </th>
+
             </tr>
+
           </thead>
 
           <tbody>
-            <tr>
-              <td
-                colSpan="6"
-                className="p-6 text-center"
-              >
-                No current leave requests found.
-              </td>
-            </tr>
+
+            {requests.length === 0 ? (
+
+              <tr>
+
+                <td
+                  colSpan="4"
+                  className="p-6 text-center"
+                >
+                  No leave requests found.
+                </td>
+
+              </tr>
+
+            ) : (
+
+              requests.map(
+                (request) => (
+
+                  <tr
+                    key={request.id}
+                    className="border-t"
+                  >
+
+                    <td className="p-4 capitalize">
+                      {request.leave_type}
+                    </td>
+
+                    <td className="p-4">
+
+                      {new Date(
+                        request.start_date
+                      ).toLocaleDateString("en-GB")}
+
+                      {" - "}
+
+                      {new Date(
+                        request.end_date
+                      ).toLocaleDateString("en-GB")}
+
+                    </td>
+
+                    <td className="p-4 capitalize">
+                      {request.status}
+                    </td>
+
+                    <td className="p-4">
+                      {request.reason}
+                    </td>
+
+                  </tr>
+
+                )
+              )
+
+            )}
+
           </tbody>
-        </table>
 
-      </div>
-
-      {/* Past Requests */}
-      <div className="bg-white border rounded-3xl overflow-hidden">
-
-        <div className="p-6 border-b">
-          <h2 className="text-2xl font-bold">
-            Past requests
-          </h2>
-
-          <p className="text-slate-500 mt-2">
-            Past includes inactive requests whose dates have passed.
-          </p>
-        </div>
-
-        <table className="w-full">
-          <thead className="bg-slate-50">
-            <tr>
-              <th className="p-4 text-left">
-                LEAVE BREAKUP
-              </th>
-              <th className="p-4 text-left">
-                DATE RANGE
-              </th>
-              <th className="p-4 text-left">
-                APPROVER
-              </th>
-              <th className="p-4 text-left">
-                STATUS
-              </th>
-              <th className="p-4 text-left">
-                NOTES
-              </th>
-            </tr>
-          </thead>
-
-          <tbody>
-            <tr>
-              <td
-                colSpan="5"
-                className="p-6 text-center"
-              >
-                No past leave requests found.
-              </td>
-            </tr>
-          </tbody>
         </table>
 
       </div>

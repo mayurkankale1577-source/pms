@@ -1,8 +1,6 @@
-import { NextResponse }
-from "next/server";
+import { NextResponse } from "next/server";
 
-import { getCurrentUser }
-from "@/lib/current-user";
+import { getCurrentUser } from "@/lib/current-user";
 
 import {
   createLeaveRequest,
@@ -16,30 +14,46 @@ export async function POST(
     const user =
       await getCurrentUser();
 
+    if (!user) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Unauthorized",
+        },
+        {
+          status: 401,
+        }
+      );
+    }
+
     const body =
       await request.json();
 
-    await createLeaveRequest({
-      userId: user.id,
-      leaveType:
-        body.leaveType,
-      startDate:
-        body.startDate,
-      endDate:
-        body.endDate,
-      totalDays:
-        body.totalDays,
-      reason:
-        body.reason,
-    });
+    const requestId =
+      await createLeaveRequest({
+        userId: user.id,
+        leaveType:
+          body.leaveType,
+        startDate:
+          body.startDate,
+        endDate:
+          body.endDate,
+        totalDays:
+          body.totalDays,
+        reason:
+          body.reason,
+      });
 
     return NextResponse.json({
       success: true,
+      requestId,
       message:
         "Leave request submitted",
     });
 
   } catch (error) {
+
+    console.error(error);
 
     return NextResponse.json(
       {

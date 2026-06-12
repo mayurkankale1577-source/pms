@@ -16,16 +16,62 @@ export default function Page() {
       reason: "",
     });
 
-  const handleSubmit =
-    async (e) => {
-
+    const handleSubmit = async (e) => {
       e.preventDefault();
-
-      console.log(form);
-
-      alert(
-        "Leave Request Submitted"
-      );
+    
+      try {
+    
+        const response = await fetch(
+          "/api/leave-requests",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type":
+                "application/json",
+            },
+            body: JSON.stringify({
+              leaveType:
+                form.diwaliLeave
+                  ? "Diwali Leave"
+                  : "Earned",
+              startDate:
+                form.startDate,
+              endDate:
+                form.endDate,
+              totalDays: 1,
+              reason:
+                form.reason,
+            }),
+          }
+        );
+    
+        const result =
+          await response.json();
+    
+        if (result.success) {
+    
+          alert(
+            "Leave Request Submitted"
+          );
+    
+          window.location.href =
+            "/dashboard/leave-requests";
+    
+        } else {
+    
+          alert(result.message);
+    
+        }
+    
+      } catch (error) {
+    
+        console.error(error);
+    
+        alert(
+          "Something went wrong"
+        );
+    
+      }
     };
 
   return (
@@ -127,45 +173,29 @@ export default function Page() {
 
           <div>
 
-            <label className="block mb-2 font-medium">
-              Approver
-            </label>
+<label className="block mb-2 font-medium">
+  Reporting Manager
+</label>
 
-            <select
-              value={form.approver}
-              onChange={(e) =>
-                setForm({
-                  ...form,
-                  approver:
-                    e.target.value,
-                })
-              }
-              className="
-                w-full
-                border
-                rounded-xl
-                p-3
-              "
-            >
-              <option value="">
-                Select Approver
-              </option>
+<input
+  type="text"
+  value="Auto Assigned"
+  readOnly
+  className="
+    w-full
+    border
+    rounded-xl
+    p-3
+    bg-slate-50
+  "
+/>
 
-              <option>
-                Anita mam
-              </option>
+<p className="text-sm text-slate-500 mt-2">
+  Leave request will automatically be sent
+  to your reporting manager.
+</p>
 
-              <option>
-                Urmila mam
-              </option>
-
-              <option>
-                Shital mam
-              </option>
-
-            </select>
-
-          </div>
+</div>
 
           {/* Diwali */}
 
