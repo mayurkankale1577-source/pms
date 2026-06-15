@@ -29,6 +29,8 @@ export async function createUser(data) {
     email,
     password,
     role,
+    reporting_manager_id,
+  
     user_type,
     functional_role,
     employee_code,
@@ -52,27 +54,31 @@ export async function createUser(data) {
 
   const [result] = await db.query(
     `
-      INSERT INTO users
-      (
-        name,
-        email,
-        password,
-        role,
+     INSERT INTO users
+(
+  name,
+  email,
+  password,
+  role,
 
-        user_type,
-        functional_role,
-        employee_code,
-        designation,
-        joining_date
-      )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+  reporting_manager_id,
+
+  user_type,
+  functional_role,
+  employee_code,
+  designation,
+  joining_date
+)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `,
     [
       name,
       email,
       hashedPassword,
       role,
-
+    
+      reporting_manager_id,
+    
       user_type,
       functional_role,
       employee_code,
@@ -340,4 +346,19 @@ export async function changePassword(
   );
 
   return true;
+}
+
+
+export async function getReportingManagers() {
+  const [rows] = await db.query(`
+    SELECT
+      id,
+      name,
+      role
+    FROM users
+    WHERE role IN ('admin', 'team_leader')
+    ORDER BY name
+  `);
+
+  return rows;
 }
