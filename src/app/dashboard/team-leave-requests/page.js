@@ -1,6 +1,9 @@
+export const dynamic = "force-dynamic";
+
 import {
   getCurrentUser,
 } from "@/lib/current-user";
+
 import LeaveActionButtons
 from "@/components/LeaveActionButtons";
 
@@ -8,28 +11,46 @@ import {
   getTeamLeaveRequests,
 } from "@/services/leave-request.service";
 
-export default async function TeamLeaveRequestsPage() {
+export default async function TeamLeaveRequestsPage({
+  searchParams,
+}) {
 
   const user =
-  await getCurrentUser();
+    await getCurrentUser();
 
-if (!user) {
-  return (
-    <div>
-      User not found
-    </div>
-  );
-}
+  if (!user) {
+    return (
+      <div>
+        User not found
+      </div>
+    );
+  }
 
-const requests =
-  await getTeamLeaveRequests(
-    user.id
+  const params =
+    await searchParams;
+
+  const page =
+    Number(params?.page) || 1;
+
+  const limit = 10;
+
+  const {
+    requests,
+    total,
+  } = await getTeamLeaveRequests(
+    user.id,
+    page,
+    limit
   );
+
+  const totalPages =
+    Math.ceil(total / limit);
 
   return (
     <div className="space-y-6">
 
       <div>
+
         <h1 className="text-4xl font-bold">
           Team Leave Requests
         </h1>
@@ -37,6 +58,7 @@ const requests =
         <p className="text-slate-500 mt-2">
           Review and manage leave requests submitted by your team members.
         </p>
+
       </div>
 
       <div className="bg-white rounded-3xl border border-slate-200 p-8">
@@ -50,6 +72,7 @@ const requests =
           <table className="w-full">
 
             <thead>
+
               <tr className="border-b">
 
                 <th className="text-left py-3">
@@ -73,6 +96,7 @@ const requests =
                 </th>
 
               </tr>
+
             </thead>
 
             <tbody>
@@ -80,60 +104,67 @@ const requests =
               {requests.length === 0 ? (
 
                 <tr>
+
                   <td
                     colSpan="5"
                     className="text-center py-10 text-slate-500"
                   >
                     No leave requests found.
                   </td>
+
                 </tr>
 
               ) : (
+
                 requests.map((request) => (
 
                   <tr
                     key={request.id}
                     className="border-b"
                   >
-                
+
                     <td className="py-4">
                       {request.employee_name}
                     </td>
-                
+
                     <td className="py-4">
+
                       {new Date(
                         request.start_date
                       ).toLocaleDateString("en-GB")}
+
                       {" - "}
+
                       {new Date(
                         request.end_date
                       ).toLocaleDateString("en-GB")}
+
                     </td>
-                
+
                     <td className="py-4 capitalize">
                       {request.leave_type}
                     </td>
-                
+
                     <td className="py-4 capitalize">
                       {request.status}
                     </td>
-                
+
                     <td className="py-4">
-                
+
                       {request.status?.toLowerCase() === "pending" ? (
-                
+
                         <LeaveActionButtons
                           requestId={request.id}
                         />
-                
+
                       ) : (
                         "-"
                       )}
-                
+
                     </td>
-                
+
                   </tr>
-                
+
                 ))
 
               )}
@@ -141,6 +172,27 @@ const requests =
             </tbody>
 
           </table>
+
+        </div>
+
+        <div className="flex justify-center gap-2 mt-6">
+
+          {Array.from(
+            { length: totalPages },
+            (_, i) => (
+              <a
+                key={i + 1}
+                href={`/dashboard/team-leave-requests?page=${i + 1}`}
+                className={`px-4 py-2 border rounded-lg ${
+                  page === i + 1
+                    ? "bg-blue-600 text-white"
+                    : "bg-white"
+                }`}
+              >
+                {i + 1}
+              </a>
+            )
+          )}
 
         </div>
 

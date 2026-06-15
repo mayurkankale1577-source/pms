@@ -11,7 +11,17 @@ import {
 import LeaveActionButtons
 from "@/components/LeaveActionButtons";
 
-export default async function AllLeaveRequestsPage() {
+export default async function AllLeaveRequestsPage({
+  searchParams,
+}) {
+
+  const params =
+    await searchParams;
+
+  const page =
+    Number(params?.page) || 1;
+
+  const limit = 10;
 
   const user =
     await getCurrentUser();
@@ -24,8 +34,16 @@ export default async function AllLeaveRequestsPage() {
     );
   }
 
-  const requests =
-    await getAllLeaveRequests();
+  const {
+    requests,
+    total,
+  } = await getAllLeaveRequests(
+    page,
+    limit
+  );
+
+  const totalPages =
+    Math.ceil(total / limit);
 
   return (
     <div className="space-y-6">
@@ -165,6 +183,27 @@ export default async function AllLeaveRequestsPage() {
             </tbody>
 
           </table>
+
+        </div>
+
+        <div className="flex justify-center gap-2 mt-6">
+
+          {Array.from(
+            { length: totalPages },
+            (_, i) => (
+              <a
+                key={i + 1}
+                href={`/dashboard/all-leave-requests?page=${i + 1}`}
+                className={`px-4 py-2 border rounded-lg ${
+                  page === i + 1
+                    ? "bg-blue-600 text-white"
+                    : "bg-white"
+                }`}
+              >
+                {i + 1}
+              </a>
+            )
+          )}
 
         </div>
 

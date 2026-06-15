@@ -113,10 +113,14 @@ export async function createLeaveRequest(
 |--------------------------------------------------------------------------
 */
 export async function getTeamLeaveRequests(
-  teamLeaderId
+  teamLeaderId,
+  page = 1,
+  limit = 10
 ) {
+  const offset =
+    (page - 1) * limit;
 
-  const [rows] = await db.query(
+  const [requests] = await db.query(
     `
     SELECT
       lr.*,
@@ -127,11 +131,33 @@ export async function getTeamLeaveRequests(
     WHERE
       u.reporting_manager_id = ?
     ORDER BY lr.created_at DESC
+    LIMIT ? OFFSET ?
     `,
-    [teamLeaderId]
+    [
+      teamLeaderId,
+      limit,
+      offset,
+    ]
   );
 
-  return rows;
+  const [countRows] =
+    await db.query(
+      `
+      SELECT COUNT(*) AS total
+      FROM leave_requests lr
+      INNER JOIN users u
+        ON lr.user_id = u.id
+      WHERE
+        u.reporting_manager_id = ?
+      `,
+      [teamLeaderId]
+    );
+
+  return {
+    requests,
+    total:
+      countRows[0].total,
+  };
 }
 
 /*
@@ -139,22 +165,42 @@ export async function getTeamLeaveRequests(
 | ALL REQUESTS
 |--------------------------------------------------------------------------
 */
-export async function getAllLeaveRequests() {
+export async function getAllLeaveRequests(
+  page = 1,
+  limit = 10
+) {
+  const offset =
+    (page - 1) * limit;
 
-  const [rows] = await db.query(`
-    SELECT
-      lr.*,
-      u.name AS employee_name,
-      a.name AS approver_name
-    FROM leave_requests lr
-    LEFT JOIN users u
-      ON lr.user_id = u.id
-    LEFT JOIN users a
-      ON lr.approved_by = a.id
-    ORDER BY lr.created_at DESC
-  `);
+  const [requests] =
+    await db.query(
+      `
+      SELECT
+        lr.*,
+        u.name AS employee_name,
+        a.name AS approver_name
+      FROM leave_requests lr
+      LEFT JOIN users u
+        ON lr.user_id = u.id
+      LEFT JOIN users a
+        ON lr.approved_by = a.id
+      ORDER BY lr.created_at DESC
+      LIMIT ? OFFSET ?
+      `,
+      [limit, offset]
+    );
 
-  return rows;
+  const [countRows] =
+    await db.query(`
+      SELECT COUNT(*) AS total
+      FROM leave_requests
+    `);
+
+  return {
+    requests,
+    total:
+      countRows[0].total,
+  };
 }
 
 /*
