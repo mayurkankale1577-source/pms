@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import {
   getCurrentUser,
 } from "@/lib/current-user";
@@ -13,6 +15,14 @@ export default async function AllLeaveRequestsPage() {
 
   const user =
     await getCurrentUser();
+
+  if (!user) {
+    return (
+      <div>
+        User not found
+      </div>
+    );
+  }
 
   const requests =
     await getAllLeaveRequests();
@@ -103,7 +113,7 @@ export default async function AllLeaveRequestsPage() {
                     </td>
 
                     <td className="py-4">
-                      {request.approver_name}
+                      {request.approver_name || "-"}
                     </td>
 
                     <td className="py-4">
@@ -130,10 +140,10 @@ export default async function AllLeaveRequestsPage() {
 
                     <td className="py-4">
 
-                      {request.status === "pending" &&
+                      {request.status?.toLowerCase() === "pending" &&
                       (
-                        user.role === "admin" ||
-                        user.role === "team_leader"
+                        user?.role === "admin" ||
+                        user?.role === "team_leader"
                       ) ? (
 
                         <LeaveActionButtons
