@@ -13,7 +13,6 @@ export default async function Page() {
 
   const user = await getCurrentUser();
 
-console.log("USER:", user);
 
 if (!user) {
   return <div>User not found</div>;

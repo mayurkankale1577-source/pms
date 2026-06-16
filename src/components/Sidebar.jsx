@@ -14,7 +14,7 @@ import {
 export default function Sidebar({ user }) {
   return (
     <aside className="w-[260px] min-h-screen bg-[#020b2d] text-white">
-      
+
       <div className="p-6 border-b border-white/10">
 
         <div className="text-xs tracking-[4px] text-[#8fa2c7] mb-4">
@@ -99,33 +99,44 @@ export default function Sidebar({ user }) {
 
 
 
-{["admin", "hr"].includes(user?.role) && (
-  <li>
-    <Link
-      href="/dashboard/all-leave-requests"
-      className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 transition"
-    >
-           <FiClipboard size={18} />
-      <span>All Leave Requests</span>
-    </Link>
-  </li>
-)}
+          {["admin", "hr"].includes(user?.role) && (
+            <li>
+              <Link
+                href="/dashboard/all-leave-requests"
+                className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 transition"
+              >
+                <FiClipboard size={18} />
+                <span>All Leave Requests</span>
+              </Link>
+            </li>
+          )}
 
-{user?.role === "team_leader" && (
-  <li>
-    <Link
-      href="/dashboard/team-leave-requests"
-      className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 transition"
-    >
-      <FiClipboard size={18} />
-      <span>Team Leave Requests</span>
-    </Link>
-  </li>
-)}
+          {user?.role === "team_leader" && (
+            <li>
+              <Link
+                href="/dashboard/team-leave-requests"
+                className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 transition"
+              >
+                <FiClipboard size={18} />
+                <span>Team Leave Requests</span>
+              </Link>
+            </li>
+          )}
+          
+          <li>
+              <Link
+                href="/dashboard/leave-requests"
+                className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 transition"
+              >
+                <FiClipboard size={18} />
+                <span>Leave Requests</span>
+              </Link>
+            </li>
+
 
         </ul>
 
-        
+
 
       </div>
     </aside>
